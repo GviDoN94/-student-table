@@ -19,6 +19,21 @@ window.addEventListener('DOMContentLoaded', () => {
   const sectionMain = createElement('section', '', 'main'),
         container = createElement('div', '', 'container'),
         title = createElement('h1', 'Список студентов', 'title'),
+        form = createElement('form', '', 'd-flex', 'flex-column'),
+        formTitle = createElement('legend', 'Форма добавления нового студента'),
+        labelName = createElement('label', 'Имя', 'form-label', 'mb-3'),
+        labelSurname = createElement('label', 'Фамилия', 'form-label', 'mb-3'),
+        labelPatronymic = createElement('label', 'Отчество', 'form-label', 'mb-3'),
+        labelFaculty = createElement('label', 'Факультет', 'form-label', 'mb-3'),
+        labelDateOfBrith = createElement('label', 'Дата рождения', 'form-label', 'mb-3'),
+        lableStartsOfStadies = createElement('label', 'Год начала обучения', 'form-label', 'mb-4'),
+        inputName = createElement('input', '', 'form-control'),
+        inputSurname = createElement('input', '', 'form-control'),
+        inputPatronymic = createElement('input', '', 'form-control'),
+        inputFaculty = createElement('input', '', 'form-control'),
+        inputDateOfBrith = createElement('input', '', 'form-control'),
+        inputStartOfStadies = createElement('input', '', 'form-control'),
+        submitBtn = createElement('button', 'Добавить студента', 'btn', 'btn-primary', 'align-self-start'),
         table = createElement('table', '', 'table'),
         tHead = createElement('thead'),
         tHeadTr = createElement('tr'),
@@ -70,6 +85,24 @@ window.addEventListener('DOMContentLoaded', () => {
           }
         ];
 
+  inputDateOfBrith.type = 'date';
+
+  renderElement(container, title);
+  renderElement(form, formTitle);
+  renderElement(labelName, inputName);
+  renderElement(labelSurname, inputSurname);
+  renderElement(labelPatronymic, inputPatronymic);
+  renderElement(labelFaculty, inputFaculty);
+  renderElement(labelDateOfBrith, inputDateOfBrith);
+  renderElement(lableStartsOfStadies, inputStartOfStadies);
+  renderElement(form, labelName);
+  renderElement(form, labelSurname);
+  renderElement(form, labelPatronymic);
+  renderElement(form, labelFaculty);
+  renderElement(form, labelDateOfBrith);
+  renderElement(form, lableStartsOfStadies);
+  renderElement(form, submitBtn);
+  renderElement(container, form);
   renderElement(tHeadTr, thName);
   renderElement(tHeadTr, thFaculty);
   renderElement(tHeadTr, thBrith);
@@ -77,26 +110,7 @@ window.addEventListener('DOMContentLoaded', () => {
   renderElement(tHead, tHeadTr);
   renderElement(table, tHead);
   renderElement(table, tBody);
-  renderElement(sectionMain, container);
-  renderElement(container, title);
   renderElement(container, table);
+  renderElement(sectionMain, container);
   renderElement(document.body, sectionMain);
-
-    // Этап 3. Создайте функцию вывода одного студента в таблицу, по аналогии с тем, как вы делали вывод одного дела в модуле 8. Функция должна вернуть html элемент с информацией и пользователе.У функции должен быть один аргумент - объект студента.
-
-    function getStudentItem(studentObj) {
-
-    }
-
-    // Этап 4. Создайте функцию отрисовки всех студентов. Аргументом функции будет массив студентов.Функция должна использовать ранее созданную функцию создания одной записи для студента.Цикл поможет вам создать список студентов.Каждый раз при изменении списка студента вы будете вызывать эту функцию для отрисовки таблицы.
-
-    function renderStudentsTable(studentsArray) {
-
-    }
-
-    // Этап 5. К форме добавления студента добавьте слушатель события отправки формы, в котором будет проверка введенных данных.Если проверка пройдет успешно, добавляйте объект с данными студентов в массив студентов и запустите функцию отрисовки таблицы студентов, созданную на этапе 4.
-
-    // Этап 5. Создайте функцию сортировки массива студентов и добавьте события кликов на соответствующие колонки.
-
-    // Этап 6. Создайте функцию фильтрации массива студентов и добавьте события для элементов формы.
 });
