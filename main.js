@@ -19,7 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const sectionMain = createElement('section', '', 'main'),
         container = createElement('div', '', 'container'),
         title = createElement('h1', 'Список студентов', 'title'),
-        form = createElement('form', '', 'd-flex', 'flex-column'),
+        form = createElement('form', '', 'd-flex', 'flex-column', 'mb-5'),
         formTitle = createElement('legend', 'Форма добавления нового студента'),
         labelName = createElement('label', 'Имя', 'form-label', 'mb-3'),
         labelSurname = createElement('label', 'Фамилия', 'form-label', 'mb-3'),
@@ -113,4 +113,32 @@ window.addEventListener('DOMContentLoaded', () => {
   renderElement(container, table);
   renderElement(sectionMain, container);
   renderElement(document.body, sectionMain);
+
+  function renderStudent(obj) {
+    const tr = createElement('tr'),
+          tdName = createElement(
+            'td',
+            `${obj.surname} ${obj.name} ${obj.patronymic}`),
+          tdFaculty = createElement('td', obj.faculty),
+          tdBrith = createElement(
+            'td',
+            `${obj.dateOfBrith.toLocaleDateString()} ( лет)`),
+          tdYearsOfEducation = createElement('td', `${obj.startOfStadies} ( курс)`);
+
+    renderElement(tr, tdName);
+    renderElement(tr, tdFaculty);
+    renderElement(tr, tdBrith);
+    renderElement(tr, tdYearsOfEducation);
+
+    return tr;
+  }
+
+  function renderStudentsTable(arr, parent) {
+    arr.forEach(student => {
+      const element = renderStudent(student);
+      renderElement(parent, element);
+    });
+  }
+
+  renderStudentsTable(studentsList, tBody);
 });
