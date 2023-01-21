@@ -32,7 +32,17 @@ window.addEventListener('DOMContentLoaded', () => {
         ? 2
         : cases[number % 10 < 5 ? number % 10 : 5]
     ];
-}
+  }
+
+  function checkCourse(year) {
+    const now = new Date();
+    let courseNumber = now.getFullYear() - year;
+
+    if (now.getMonth() > 8) {
+      courseNumber++;
+    }
+    return courseNumber > 4 ? 'закончил' : `${courseNumber} курс`;
+  }
 
   function renderStudent(obj) {
     const tr = createElement('tr'),
@@ -48,7 +58,11 @@ window.addEventListener('DOMContentLoaded', () => {
               "года",
               "лет",
           ])})`),
-          tdYearsOfEducation = createElement('td', `${obj.startOfStadies}- ( курс)`);
+          startDate = obj.startDate,
+          tdYearsOfEducation = createElement(
+            'td',
+            `${startDate}-${startDate + 4} (${checkCourse(startDate)})`
+          );
 
     renderElement(tr, tdName);
     renderElement(tr, tdFaculty);
@@ -73,17 +87,43 @@ window.addEventListener('DOMContentLoaded', () => {
         formTitle = createElement('legend', 'Форма добавления нового студента'),
         labelName = createElement('label', 'Имя', 'form-label', 'mb-3'),
         labelSurname = createElement('label', 'Фамилия', 'form-label', 'mb-3'),
-        labelPatronymic = createElement('label', 'Отчество', 'form-label', 'mb-3'),
-        labelFaculty = createElement('label', 'Факультет', 'form-label', 'mb-3'),
-        labelBorn = createElement('label', 'Дата рождения', 'form-label', 'mb-3'),
-        lableStartsOfStadies = createElement('label', 'Год начала обучения', 'form-label', 'mb-4'),
+        labelPatronymic = createElement(
+          'label',
+          'Отчество',
+          'form-label',
+          'mb-3'
+        ),
+        labelFaculty = createElement(
+          'label',
+          'Факультет',
+          'form-label',
+          'mb-3'
+        ),
+        labelBorn = createElement(
+          'label',
+          'Дата рождения',
+          'form-label',
+          'mb-3'
+        ),
+        lableStartsOfStadies = createElement(
+          'label',
+          'Год начала обучения',
+          'form-label',
+          'mb-4'
+        ),
         inputName = createElement('input', '', 'form-control'),
         inputSurname = createElement('input', '', 'form-control'),
         inputPatronymic = createElement('input', '', 'form-control'),
         inputFaculty = createElement('input', '', 'form-control'),
         inputBorn = createElement('input', '', 'form-control'),
-        inputStartOfStadies = createElement('input', '', 'form-control'),
-        submitBtn = createElement('button', 'Добавить студента', 'btn', 'btn-primary', 'align-self-start'),
+        inputStartDate = createElement('input', '', 'form-control'),
+        submitBtn = createElement(
+          'button',
+          'Добавить студента',
+          'btn',
+          'btn-primary',
+          'align-self-start'
+        ),
         table = createElement('table', '', 'table'),
         tHead = createElement('thead'),
         tHeadTr = createElement('tr'),
@@ -98,7 +138,7 @@ window.addEventListener('DOMContentLoaded', () => {
             surname: 'Соболев',
             patronymic: 'Львович',
             born: new Date('1993-06-27'),
-            startOfStadies: 2020,
+            startDate: 2020,
             faculty: 'Психологии'
           },
           {
@@ -106,7 +146,7 @@ window.addEventListener('DOMContentLoaded', () => {
             surname: 'Лаптева',
             patronymic: 'Артёмовна',
             born: new Date('1996-08-23'),
-            startOfStadies: 2018,
+            startDate: 2018,
             faculty: 'Юридический'
           },
           {
@@ -114,7 +154,7 @@ window.addEventListener('DOMContentLoaded', () => {
             surname: 'Меркулова',
             patronymic: 'Тимуровна',
             born: new Date('2003-07-15'),
-            startOfStadies: 2022,
+            startDate: 2022,
             faculty: 'Социологии'
           },
           {
@@ -122,7 +162,7 @@ window.addEventListener('DOMContentLoaded', () => {
             surname: 'Поляков',
             patronymic: 'Михайлович',
             born: new Date('2001-10-09'),
-            startOfStadies: 2021,
+            startDate: 2021,
             faculty: 'Журналистики'
           },
           {
@@ -130,12 +170,13 @@ window.addEventListener('DOMContentLoaded', () => {
             surname: 'Николаев',
             patronymic: 'Иванович',
             born: new Date('2000-02-06'),
-            startOfStadies: 2019,
+            startDate: 2019,
             faculty: 'Юридический'
           }
         ];
 
   inputBorn.type = 'date';
+
 
   renderElement(container, title);
   renderElement(form, formTitle);
@@ -144,7 +185,7 @@ window.addEventListener('DOMContentLoaded', () => {
   renderElement(labelPatronymic, inputPatronymic);
   renderElement(labelFaculty, inputFaculty);
   renderElement(labelBorn, inputBorn);
-  renderElement(lableStartsOfStadies, inputStartOfStadies);
+  renderElement(lableStartsOfStadies, inputStartDate);
   renderElement(form, labelName);
   renderElement(form, labelSurname);
   renderElement(form, labelPatronymic);
