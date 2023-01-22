@@ -16,10 +16,10 @@ window.addEventListener('DOMContentLoaded', () => {
     parent.append(element);
   }
 
-  function calculateAge(obj) {
+  function calculateAge(date) {
     const now = new Date();
-    let age = now.getFullYear() - obj.getFullYear() - 1;
-    if (now.getMonth() >= obj.getMonth() && now.getDate() >= obj.getDate()) {
+    let age = now.getFullYear() - date.getFullYear() - 1;
+    if (now.getMonth() >= date.getMonth() && now.getDate() >= date.getDate()) {
       age++;
     }
     return age;
@@ -28,9 +28,8 @@ window.addEventListener('DOMContentLoaded', () => {
   function declOfNum(number, titles) {
     const cases = [2, 0, 1, 1, 1, 2];
     return titles[
-        number % 100 > 4 && number % 100 < 20
-        ? 2
-        : cases[number % 10 < 5 ? number % 10 : 5]
+        number % 100 > 4 && number % 100 < 20 ?
+        2 : cases[number % 10 < 5 ? number % 10 : 5]
     ];
   }
 
@@ -85,6 +84,14 @@ window.addEventListener('DOMContentLoaded', () => {
         title = createElement('h1', 'Список студентов', 'title'),
         form = createElement('form', '', 'd-flex', 'flex-column', 'mb-5'),
         formTitle = createElement('legend', 'Форма добавления нового студента'),
+        table = createElement('table', '', 'table', 'table-hover'),
+        tHead = createElement('thead'),
+        tHeadTr = createElement('tr'),
+        thName = createElement('th', 'Ф.И.О. студента'),
+        thFaculty = createElement('th', 'Факультет'),
+        thBrith = createElement('th', 'Дата рождения'),
+        thYearsOfEducation = createElement('th', 'Годы обучения'),
+        tBody = createElement('tbody', '', 'table-group-divider'),
         labelName = createElement('label', 'Имя', 'form-label', 'mb-3'),
         labelSurname = createElement('label', 'Фамилия', 'form-label', 'mb-3'),
         labelPatronymic = createElement(
@@ -124,50 +131,42 @@ window.addEventListener('DOMContentLoaded', () => {
           'btn-primary',
           'align-self-start'
         ),
-        table = createElement('table', '', 'table'),
-        tHead = createElement('thead'),
-        tHeadTr = createElement('tr'),
-        thName = createElement('th', 'Ф.И.О. студента'),
-        thFaculty = createElement('th', 'Факультет'),
-        thBrith = createElement('th', 'Дата рождения'),
-        thYearsOfEducation = createElement('th', 'Годы обучения'),
-        tBody = createElement('tbody'),
         studentsList = [
           {
-            name: 'Георгий',
             surname: 'Соболев',
+            name: 'Георгий',
             patronymic: 'Львович',
             born: new Date('1993-06-27'),
             startDate: 2020,
             faculty: 'Психологии'
           },
           {
-            name: 'Нина',
             surname: 'Лаптева',
+            name: 'Нина',
             patronymic: 'Артёмовна',
             born: new Date('1996-08-23'),
             startDate: 2018,
             faculty: 'Юридический'
           },
           {
-            name: 'Софья',
             surname: 'Меркулова',
+            name: 'Софья',
             patronymic: 'Тимуровна',
             born: new Date('2003-07-15'),
             startDate: 2022,
             faculty: 'Социологии'
           },
           {
-            name: 'Матвей',
             surname: 'Поляков',
+            name: 'Матвей',
             patronymic: 'Михайлович',
             born: new Date('2001-10-09'),
             startDate: 2021,
             faculty: 'Журналистики'
           },
           {
-            name: 'Кирилл',
             surname: 'Николаев',
+            name: 'Кирилл',
             patronymic: 'Иванович',
             born: new Date('2000-02-06'),
             startDate: 2019,
@@ -176,18 +175,32 @@ window.addEventListener('DOMContentLoaded', () => {
         ];
 
   inputBorn.type = 'date';
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
 
+    const newStudent = {
+      name: inputName.value,
+      surname: inputSurname.value,
+      patronymic: inputPatronymic.value,
+      born: new Date(inputBorn.value),
+      startDate: +inputStartDate.value,
+      faculty: inputFaculty.value
+    };
+    form.reset();
+    studentsList.push(newStudent);
+    renderStudentsTable(studentsList, tBody);
+  });
 
   renderElement(container, title);
   renderElement(form, formTitle);
-  renderElement(labelName, inputName);
   renderElement(labelSurname, inputSurname);
+  renderElement(labelName, inputName);
   renderElement(labelPatronymic, inputPatronymic);
   renderElement(labelFaculty, inputFaculty);
   renderElement(labelBorn, inputBorn);
   renderElement(lableStartsOfStadies, inputStartDate);
-  renderElement(form, labelName);
   renderElement(form, labelSurname);
+  renderElement(form, labelName);
   renderElement(form, labelPatronymic);
   renderElement(form, labelFaculty);
   renderElement(form, labelBorn);
