@@ -79,17 +79,31 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function showError(el, errorsContainer, message) {
+    el.classList.add('is-invalid');
+    const error = createElement('p',
+    `Поле "${el.parentNode.textContent}" ${message}`,
+    'text-danger');
+    renderElement(errorsContainer, error);
+    return true;
+  }
+
   function checkForm(form, errorsContainer) {
+    const nowDate = new Date();
     let wrong = false;
     form.querySelectorAll('input').forEach(input => {
-      if(!input.value.trim()) {
-        wrong = true;
-        input.classList.add('is-invalid');
-        const error = createElement('p',
-        `Поле"${input.parentNode.textContent}" не заполнено или содержит
-        пробелы`,
-        'text-danger');
-        renderElement(errorsContainer, error);
+      if (!input.value.trim()) {
+        wrong = showError(
+          input,
+          errorsContainer,
+          'не заполнено или содержит пробелы');
+      } else if (
+          input.type === 'number' &&
+          (input.value < 2000 || input.value > nowDate.getFullYear())) {
+          wrong = showError(
+            input,
+            errorsContainer,
+            'должно находится в диапазоне от 2000-го до текущего года');
       }
     });
     return wrong;
