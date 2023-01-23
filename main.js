@@ -247,6 +247,11 @@ window.addEventListener('DOMContentLoaded', () => {
   form.querySelectorAll('input').forEach(input => {
     input.addEventListener('input', () => {
       input.classList.remove('is-invalid');
+      errorsContainer.querySelectorAll('p').forEach(error => {
+        if (error.textContent.includes(input.parentNode.textContent)) {
+          error.remove();
+        }
+      });
     });
   });
 
