@@ -79,6 +79,22 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function checkForm(form, errorsContainer) {
+    let wrong = false;
+    form.querySelectorAll('input').forEach(input => {
+      if(!input.value.trim()) {
+        wrong = true;
+        input.classList.add('is-invalid');
+        const error = createElement('p',
+        `Поле"${input.parentNode.textContent}" не заполнено или содержит
+        пробелы`,
+        'text-danger');
+        renderElement(errorsContainer, error);
+      }
+    });
+    return wrong;
+  }
+
   const sectionMain = createElement('section', '', 'main'),
         container = createElement('div', '', 'container'),
         title = createElement('h1', 'Список студентов', 'title'),
@@ -124,6 +140,7 @@ window.addEventListener('DOMContentLoaded', () => {
         inputFaculty = createElement('input', '', 'form-control'),
         inputBorn = createElement('input', '', 'form-control'),
         inputStartDate = createElement('input', '', 'form-control'),
+        errorsContainer = createElement('div'),
         submitBtn = createElement(
           'button',
           'Добавить студента',
@@ -175,21 +192,7 @@ window.addEventListener('DOMContentLoaded', () => {
         ];
 
   inputBorn.type = 'date';
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const newStudent = {
-      name: inputName.value,
-      surname: inputSurname.value,
-      patronymic: inputPatronymic.value,
-      born: new Date(inputBorn.value),
-      startDate: +inputStartDate.value,
-      faculty: inputFaculty.value
-    };
-    form.reset();
-    studentsList.push(newStudent);
-    renderStudentsTable(studentsList, tBody);
-  });
+  inputStartDate.type ='number';
 
   renderElement(container, title);
   renderElement(form, formTitle);
@@ -205,6 +208,7 @@ window.addEventListener('DOMContentLoaded', () => {
   renderElement(form, labelFaculty);
   renderElement(form, labelBorn);
   renderElement(form, lableStartsOfStadies);
+  renderElement(form, errorsContainer);
   renderElement(form, submitBtn);
   renderElement(container, form);
   renderElement(tHeadTr, thName);
@@ -218,5 +222,37 @@ window.addEventListener('DOMContentLoaded', () => {
   renderElement(sectionMain, container);
   renderElement(document.body, sectionMain);
 
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    errorsContainer.innerHTML = '';
+    if (checkForm(form, errorsContainer)) {
+      return;
+    }
+
+    const newStudent = {
+      surname: inputSurname.value,
+      name: inputName.value,
+      patronymic: inputPatronymic.value,
+      born: new Date(inputBorn.value),
+      startDate: +inputStartDate.value,
+      faculty: inputFaculty.value
+    };
+
+    form.reset();
+    studentsList.push(newStudent);
+    renderStudentsTable(studentsList, tBody);
+  });
+
+  form.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', () => {
+      input.classList.remove('is-invalid');
+    });
+  });
+
   renderStudentsTable(studentsList, tBody);
+
+    // Этап 5. Создайте функцию сортировки массива студентов и добавьте события кликов на соответствующие колонки.
+
+    // Этап 6. Создайте функцию фильтрации массива студентов и добавьте события для элементов формы.
 });
