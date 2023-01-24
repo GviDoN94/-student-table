@@ -72,20 +72,26 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderStudentsTable(arr, parent) {
+    const copyArr = [...arr];
     parent.innerHTML = '';
-    arr.forEach(student => {
+    copyArr.forEach(student => {
       const element = renderStudent(student);
       renderElement(parent, element);
     });
   }
 
-  function showError(el, errorsContainer, message) {
-    el.classList.add('is-invalid');
+  function showError(element, errorsContainer, message) {
+    element.classList.add('is-invalid');
     const error = createElement('p',
-    `Поле "${el.parentNode.textContent}" ${message}`,
+    `Поле "${element.parentNode.textContent}" ${message}`,
     'text-danger');
     renderElement(errorsContainer, error);
     return true;
+  }
+
+  function checkDateRange(element, bottomLine, topLine) {
+    return Date.parse(element.value) < Date.parse(bottomLine) ||
+           Date.parse(element.value) > Date.parse(topLine) ? true : false;
   }
 
   function checkForm(form, errorsContainer) {
@@ -105,12 +111,20 @@ window.addEventListener('DOMContentLoaded', () => {
             errorsContainer,
             'должно находится в диапазоне от 2000-го до текущего года');
       }
+      else if (
+          input.type === 'date' &&
+          checkDateRange(input, '1900-01-01', nowDate)) {
+          wrong = showError(
+            input,
+            errorsContainer,
+            'должно находится в диапазоне от 01.01.1900-го до текущей даты');
+      }
     });
     return wrong;
   }
 
   const sectionMain = createElement('section', '', 'main'),
-        container = createElement('div', '', 'container'),
+        container = createElement('div', '', 'container', 'p-4'),
         title = createElement('h1', 'Список студентов', 'title'),
         form = createElement('form', '', 'd-flex', 'flex-column', 'mb-5'),
         formTitle = createElement('legend', 'Форма добавления нового студента'),
@@ -119,7 +133,7 @@ window.addEventListener('DOMContentLoaded', () => {
         tHeadTr = createElement('tr'),
         thName = createElement('th', 'Ф.И.О. студента'),
         thFaculty = createElement('th', 'Факультет'),
-        thBrith = createElement('th', 'Дата рождения'),
+        thBrith = createElement('th', 'Дата рождения и возраст'),
         thYearsOfEducation = createElement('th', 'Годы обучения'),
         tBody = createElement('tbody', '', 'table-group-divider'),
         labelName = createElement('label', 'Имя', 'form-label', 'mb-3'),
@@ -253,9 +267,9 @@ window.addEventListener('DOMContentLoaded', () => {
       faculty: inputFaculty.value
     };
 
-    form.reset();
     studentsList.push(newStudent);
     renderStudentsTable(studentsList, tBody);
+    form.reset();
   });
 
   form.querySelectorAll('input').forEach(input => {
@@ -268,6 +282,7 @@ window.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
+  
 
   renderStudentsTable(studentsList, tBody);
 
