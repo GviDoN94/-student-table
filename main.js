@@ -228,7 +228,13 @@ window.addEventListener('DOMContentLoaded', () => {
           faculty: true,
           born: true,
           startDate: true
-        };
+        },
+        filterForm = createElement('form'),
+        filterFormTitle = createElement('legend', 'Фильтрация'),
+        filerInputName = createElement('input', '', 'form-control', 'mb-3'),
+        filerInputFaculty = createElement('input', '', 'form-control', 'mb-3'),
+        filerInputStartYear = createElement('input', '', 'form-control', 'mb-3'),
+        filerInputFinishYear = createElement('input', '', 'form-control', 'mb-3');
 
   inputBorn.type = 'date';
   inputStartDate.type ='number';
@@ -237,6 +243,10 @@ window.addEventListener('DOMContentLoaded', () => {
   thFaculty.dataset.id = 'faculty';
   thBorn.dataset.id = 'born';
   thYearsStudy.dataset.id = 'startDate';
+  filerInputName.placeholder = 'Ф.И.О';
+  filerInputFaculty.placeholder = 'Факультет';
+  filerInputStartYear.placeholder = 'Год начала обучения';
+  filerInputFinishYear.placeholder = 'Год окончания обучения';
 
   renderElement(container, title);
   renderElement(form, formTitle);
@@ -255,6 +265,12 @@ window.addEventListener('DOMContentLoaded', () => {
   renderElement(form, errorsContainer);
   renderElement(form, submitBtn);
   renderElement(container, form);
+  renderElement(filterForm, filterFormTitle);
+  renderElement(filterForm, filerInputName);
+  renderElement(filterForm, filerInputFaculty);
+  renderElement(filterForm, filerInputStartYear);
+  renderElement(filterForm, filerInputFinishYear);
+  renderElement(container, filterForm);
   renderElement(tHeadTr, thName);
   renderElement(tHeadTr, thFaculty);
   renderElement(tHeadTr, thBorn);
