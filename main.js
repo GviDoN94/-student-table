@@ -47,7 +47,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const tr = createElement('tr'),
           tdName = createElement(
             'td',
-            `${obj.surname} ${obj.name} ${obj.patronymic}`),
+            `${obj.surname} ${obj.name} ${obj.patronymic}`
+          ),
           tdFaculty = createElement('td', obj.faculty),
           age = calculateAge(obj.born),
           tdBorn = createElement(
@@ -56,9 +57,9 @@ window.addEventListener('DOMContentLoaded', () => {
               "год",
               "года",
               "лет",
-          ])})`),
+            ])})`),
           startDate = obj.startDate,
-          tdYearsOfEducation = createElement(
+          tdYearsStudy = createElement(
             'td',
             `${startDate}-${startDate + 4} (${checkCourse(startDate)})`
           );
@@ -66,7 +67,7 @@ window.addEventListener('DOMContentLoaded', () => {
     renderElement(tr, tdName);
     renderElement(tr, tdFaculty);
     renderElement(tr, tdBorn);
-    renderElement(tr, tdYearsOfEducation);
+    renderElement(tr, tdYearsStudy);
 
     return tr;
   }
@@ -82,9 +83,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function showError(element, errorsContainer, message) {
     element.classList.add('is-invalid');
-    const error = createElement('p',
-    `Поле "${element.parentNode.textContent}" ${message}`,
-    'text-danger');
+    const error = createElement(
+      'p',
+      `Поле "${element.parentNode.textContent}" ${message}`,
+      'text-danger'
+    );
     renderElement(errorsContainer, error);
     return true;
   }
@@ -102,7 +105,8 @@ window.addEventListener('DOMContentLoaded', () => {
         wrong = showError(
           input,
           errorsContainer,
-          'не заполнено или содержит пробелы');
+          'не заполнено или содержит пробелы'
+        );
       } else if (
           input.type === 'number' &&
           (input.value < 2000 || input.value > nowDate.getFullYear())) {
@@ -117,7 +121,8 @@ window.addEventListener('DOMContentLoaded', () => {
           wrong = showError(
             input,
             errorsContainer,
-            'должно находится в диапазоне от 01.01.1900-го до текущей даты');
+            'должно находится в диапазоне от 01.01.1900-го до текущей даты'
+          );
       }
     });
     return wrong;
@@ -133,8 +138,8 @@ window.addEventListener('DOMContentLoaded', () => {
         tHeadTr = createElement('tr'),
         thName = createElement('th', 'Ф.И.О. студента'),
         thFaculty = createElement('th', 'Факультет'),
-        thBrith = createElement('th', 'Дата рождения и возраст'),
-        thYearsOfEducation = createElement('th', 'Годы обучения'),
+        thBorn = createElement('th', 'Дата рождения и возраст'),
+        thYearsStudy = createElement('th', 'Годы обучения'),
         tBody = createElement('tbody', '', 'table-group-divider'),
         labelName = createElement('label', 'Имя', 'form-label', 'mb-3'),
         labelSurname = createElement('label', 'Фамилия', 'form-label', 'mb-3'),
@@ -221,6 +226,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
   inputBorn.type = 'date';
   inputStartDate.type ='number';
+  tHead.style.cursor = 'pointer';
+  thName.dataset.id = 'name';
+  thFaculty.dataset.id = 'faculty';
+  thBorn.dataset.id = 'born';
+  thYearsStudy.dataset.id = 'startDate';
 
   renderElement(container, title);
   renderElement(form, formTitle);
@@ -241,8 +251,8 @@ window.addEventListener('DOMContentLoaded', () => {
   renderElement(container, form);
   renderElement(tHeadTr, thName);
   renderElement(tHeadTr, thFaculty);
-  renderElement(tHeadTr, thBrith);
-  renderElement(tHeadTr, thYearsOfEducation);
+  renderElement(tHeadTr, thBorn);
+  renderElement(tHeadTr, thYearsStudy);
   renderElement(tHead, tHeadTr);
   renderElement(table, tHead);
   renderElement(table, tBody);
@@ -252,8 +262,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-
     errorsContainer.innerHTML = '';
+
     if (checkForm(form, errorsContainer)) {
       return;
     }
@@ -282,11 +292,52 @@ window.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
-  
+
+  tHead.addEventListener("click", (e) => {
+    const id = e.target.dataset.id;
+    let sortArr = null;
+
+    switch (id) {
+      case 'name':
+        sortArr = studentsList.sort((a, b) => {
+          const firstFullName =
+                  (a.surname + a.name + a.patronymic).toLowerCase(),
+                secondFullName =
+                  (b.surname + b.name + b.patronymic).toLowerCase();
+          if (firstFullName < secondFullName) {
+            return -1;
+          }
+        });
+        break;
+      case 'faculty':
+        sortArr = studentsList.sort((a, b) => {
+          if (a[id] < b[id]) {
+            return -1;
+          }
+        });
+        break;
+      case 'born':
+        sortArr = studentsList.sort((a, b) => {
+          const firstBorn = Date.parse(a[id]),
+                secondBorn = Date.parse(b[id]);
+          if (firstBorn < secondBorn) {
+            return -1;
+          }
+        });
+        break;
+      case 'startDate':
+        sortArr = studentsList.sort((a, b) => a[id] - b[id]);
+        break;
+      default:
+        return;
+    }
+
+    renderStudentsTable(sortArr, tBody);
+  });
+
+  tHead.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+  });
 
   renderStudentsTable(studentsList, tBody);
-
-    // Этап 5. Создайте функцию сортировки массива студентов и добавьте события кликов на соответствующие колонки.
-
-    // Этап 6. Создайте функцию фильтрации массива студентов и добавьте события для элементов формы.
 });
