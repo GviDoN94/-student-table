@@ -222,7 +222,13 @@ window.addEventListener('DOMContentLoaded', () => {
             startDate: 2019,
             faculty: 'Юридический'
           }
-        ];
+        ],
+        sortDirectionFlags = {
+          name: true,
+          faculty: true,
+          born: true,
+          startDate: true
+        };
 
   inputBorn.type = 'date';
   inputStartDate.type ='number';
@@ -304,29 +310,43 @@ window.addEventListener('DOMContentLoaded', () => {
                   (a.surname + a.name + a.patronymic).toLowerCase(),
                 secondFullName =
                   (b.surname + b.name + b.patronymic).toLowerCase();
-          if (firstFullName < secondFullName) {
+          let sortingDirection = sortDirectionFlags[id] ?
+            firstFullName < secondFullName : firstFullName > secondFullName;
+          if (sortingDirection) {
             return -1;
           }
         });
+        sortDirectionFlags[id] = !sortDirectionFlags[id];
         break;
       case 'faculty':
         sortArr = studentsList.sort((a, b) => {
-          if (a[id] < b[id]) {
+          let sortingDirection = sortDirectionFlags[id] ?
+            a[id] < b[id] : a[id] > b[id];
+          if (sortingDirection) {
             return -1;
           }
         });
+        sortDirectionFlags[id] = !sortDirectionFlags[id];
         break;
       case 'born':
         sortArr = studentsList.sort((a, b) => {
           const firstBorn = Date.parse(a[id]),
                 secondBorn = Date.parse(b[id]);
-          if (firstBorn < secondBorn) {
+          let sortingDirection = sortDirectionFlags[id] ?
+            firstBorn < secondBorn : firstBorn > secondBorn;
+          if (sortingDirection) {
             return -1;
           }
         });
+        sortDirectionFlags[id] = !sortDirectionFlags[id];
         break;
       case 'startDate':
-        sortArr = studentsList.sort((a, b) => a[id] - b[id]);
+        sortArr = studentsList.sort((a, b) => {
+          let sortingDirection = sortDirectionFlags[id] ?
+            a[id] - b[id] : b[id] - a[id];
+          return sortingDirection;
+        });
+        sortDirectionFlags[id] = !sortDirectionFlags[id];
         break;
       default:
         return;
