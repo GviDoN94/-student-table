@@ -128,6 +128,10 @@ window.addEventListener('DOMContentLoaded', () => {
     return wrong;
   }
 
+  function AddCapitalLetter(value) {
+    return value[0].toUpperCase() + value.slice(1).toLowerCase();
+  }
+
   const sectionMain = createElement('section', '', 'main'),
         container = createElement('div', '', 'container', 'p-4'),
         title = createElement('h1', 'Список студентов', 'title'),
@@ -291,12 +295,12 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     const newStudent = {
-      surname: inputSurname.value,
-      name: inputName.value,
-      patronymic: inputPatronymic.value,
+      surname: AddCapitalLetter(inputSurname.value),
+      name: AddCapitalLetter(inputName.value),
+      patronymic: AddCapitalLetter(inputPatronymic.value),
       born: new Date(inputBorn.value),
       startDate: +inputStartDate.value,
-      faculty: inputFaculty.value
+      faculty: AddCapitalLetter(inputFaculty.value)
     };
 
     studentsList.push(newStudent);
@@ -333,6 +337,9 @@ window.addEventListener('DOMContentLoaded', () => {
           }
         });
         sortDirectionFlags[id] = !sortDirectionFlags[id];
+        sortDirectionFlags.faculty = true;
+        sortDirectionFlags.born = true;
+        sortDirectionFlags.startDate = true;
         break;
       case 'faculty':
         sortArr = studentsList.sort((a, b) => {
@@ -343,6 +350,9 @@ window.addEventListener('DOMContentLoaded', () => {
           }
         });
         sortDirectionFlags[id] = !sortDirectionFlags[id];
+        sortDirectionFlags.name = true;
+        sortDirectionFlags.born = true;
+        sortDirectionFlags.startDate = true;
         break;
       case 'born':
         sortArr = studentsList.sort((a, b) => {
@@ -355,6 +365,9 @@ window.addEventListener('DOMContentLoaded', () => {
           }
         });
         sortDirectionFlags[id] = !sortDirectionFlags[id];
+        sortDirectionFlags.name = true;
+        sortDirectionFlags.faculty = true;
+        sortDirectionFlags.startDate = true;
         break;
       case 'startDate':
         sortArr = studentsList.sort((a, b) => {
@@ -363,6 +376,9 @@ window.addEventListener('DOMContentLoaded', () => {
           return sortingDirection;
         });
         sortDirectionFlags[id] = !sortDirectionFlags[id];
+        sortDirectionFlags.name = true;
+        sortDirectionFlags.faculty = true;
+        sortDirectionFlags.born = true;
         break;
       default:
         return;
