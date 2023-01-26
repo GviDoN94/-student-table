@@ -72,15 +72,6 @@ window.addEventListener('DOMContentLoaded', () => {
     return tr;
   }
 
-  function renderStudentsTable(arr, parent) {
-    const copyArr = [...arr];
-    parent.innerHTML = '';
-    copyArr.forEach(student => {
-      const element = renderStudent(student);
-      renderElement(parent, element);
-    });
-  }
-
   function showError(element, errorsContainer, message) {
     element.classList.add('is-invalid');
     const error = createElement(
@@ -237,8 +228,18 @@ window.addEventListener('DOMContentLoaded', () => {
         filterFormTitle = createElement('legend', 'Фильтрация'),
         filerInputName = createElement('input', '', 'form-control', 'mb-3'),
         filerInputFaculty = createElement('input', '', 'form-control', 'mb-3'),
-        filerInputStartYear = createElement('input', '', 'form-control', 'mb-3'),
-        filerInputFinishYear = createElement('input', '', 'form-control', 'mb-3');
+        filerInputStartYear = createElement(
+          'input',
+          '',
+          'form-control',
+          'mb-3'
+          ),
+        filerInputFinishYear = createElement(
+          'input',
+          '',
+          'form-control',
+          'mb-3'
+          );
 
   inputBorn.type = 'date';
   inputStartDate.type ='number';
@@ -247,6 +248,8 @@ window.addEventListener('DOMContentLoaded', () => {
   thFaculty.dataset.id = 'faculty';
   thBorn.dataset.id = 'born';
   thYearsStudy.dataset.id = 'startDate';
+  filerInputStartYear.type ='number';
+  filerInputFinishYear.type ='number';
   filerInputName.placeholder = 'Ф.И.О';
   filerInputFaculty.placeholder = 'Факультет';
   filerInputStartYear.placeholder = 'Год начала обучения';
@@ -286,6 +289,46 @@ window.addEventListener('DOMContentLoaded', () => {
   renderElement(sectionMain, container);
   renderElement(document.body, sectionMain);
 
+  function filterList(arr, key, value) {
+    return arr.filter(item => {
+      if (typeof(item[key]) === 'string') {
+        return item[key].toLowerCase().includes(value.toLowerCase());
+      }
+      return String(item[key]).includes(value);
+    });
+  }
+
+  function renderStudentsTable(arr = studentsList, parent = tBody) {
+    parent.innerHTML = '';
+    let copyArr = [...arr];
+
+    copyArr.forEach(item => {
+      item.fullName = `${item.surname} ${item.name} ${item.patronymic}`;
+      item.finishDate = item.startDate + 4;
+    });
+
+    if (filerInputName.value.trim() !== '') {
+      copyArr = filterList(copyArr, 'fullName', filerInputName.value);
+    }
+
+    if (filerInputFaculty.value.trim() !== '') {
+      copyArr = filterList(copyArr, 'faculty', filerInputFaculty.value);
+    }
+
+    if (filerInputStartYear.value.trim() !== '') {
+      copyArr = filterList(copyArr, 'startDate', filerInputStartYear.value);
+    }
+
+    if (filerInputFinishYear.value.trim() !== '') {
+      copyArr = filterList(copyArr, 'finishDate', filerInputFinishYear.value);
+    }
+
+    copyArr.forEach(student => {
+      const element = renderStudent(student);
+      renderElement(parent, element);
+    });
+  }
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     errorsContainer.innerHTML = '';
@@ -319,76 +362,23 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  tHead.addEventListener("click", (e) => {
-    const id = e.target.dataset.id;
-    let sortArr = null;
+  tHead.addEventListener('mousedown', e => e.preventDefault());
+  filterForm.addEventListener('submit', e => e.preventDefault());
 
-    switch (id) {
-      case 'name':
-        sortArr = studentsList.sort((a, b) => {
-          const firstFullName =
-                  (a.surname + a.name + a.patronymic).toLowerCase(),
-                secondFullName =
-                  (b.surname + b.name + b.patronymic).toLowerCase();
-          let sortingDirection = sortDirectionFlags[id] ?
-            firstFullName < secondFullName : firstFullName > secondFullName;
-          if (sortingDirection) {
-            return -1;
-          }
-        });
-        sortDirectionFlags[id] = !sortDirectionFlags[id];
-        sortDirectionFlags.faculty = true;
-        sortDirectionFlags.born = true;
-        sortDirectionFlags.startDate = true;
-        break;
-      case 'faculty':
-        sortArr = studentsList.sort((a, b) => {
-          let sortingDirection = sortDirectionFlags[id] ?
-            a[id] < b[id] : a[id] > b[id];
-          if (sortingDirection) {
-            return -1;
-          }
-        });
-        sortDirectionFlags[id] = !sortDirectionFlags[id];
-        sortDirectionFlags.name = true;
-        sortDirectionFlags.born = true;
-        sortDirectionFlags.startDate = true;
-        break;
-      case 'born':
-        sortArr = studentsList.sort((a, b) => {
-          const firstBorn = Date.parse(a[id]),
-                secondBorn = Date.parse(b[id]);
-          let sortingDirection = sortDirectionFlags[id] ?
-            firstBorn < secondBorn : firstBorn > secondBorn;
-          if (sortingDirection) {
-            return -1;
-          }
-        });
-        sortDirectionFlags[id] = !sortDirectionFlags[id];
-        sortDirectionFlags.name = true;
-        sortDirectionFlags.faculty = true;
-        sortDirectionFlags.startDate = true;
-        break;
-      case 'startDate':
-        sortArr = studentsList.sort((a, b) => {
-          let sortingDirection = sortDirectionFlags[id] ?
-            a[id] - b[id] : b[id] - a[id];
-          return sortingDirection;
-        });
-        sortDirectionFlags[id] = !sortDirectionFlags[id];
-        sortDirectionFlags.name = true;
-        sortDirectionFlags.faculty = true;
-        sortDirectionFlags.born = true;
-        break;
-      default:
-        return;
-    }
-
-    renderStudentsTable(sortArr, tBody);
+  filerInputName.addEventListener('input', () => {
+    renderStudentsTable();
   });
 
-  tHead.addEventListener('mousedown', (e) => {
-    e.preventDefault();
+  filerInputFaculty.addEventListener('input', () => {
+    renderStudentsTable();
+  });
+
+  filerInputStartYear.addEventListener('input', () => {
+    renderStudentsTable();
+  });
+
+  filerInputFinishYear.addEventListener('input', () => {
+    renderStudentsTable();
   });
 
   renderStudentsTable(studentsList, tBody);
