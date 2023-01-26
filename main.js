@@ -364,22 +364,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
   tHead.addEventListener('mousedown', e => e.preventDefault());
   filterForm.addEventListener('submit', e => e.preventDefault());
-
-  filerInputName.addEventListener('input', () => {
-    renderStudentsTable();
-  });
-
-  filerInputFaculty.addEventListener('input', () => {
-    renderStudentsTable();
-  });
-
-  filerInputStartYear.addEventListener('input', () => {
-    renderStudentsTable();
-  });
-
-  filerInputFinishYear.addEventListener('input', () => {
-    renderStudentsTable();
-  });
+  filterForm.querySelectorAll('input').forEach(
+      item => item.addEventListener('input', () => renderStudentsTable())
+    );
 
   renderStudentsTable(studentsList, tBody);
 });
