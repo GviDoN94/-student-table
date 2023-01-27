@@ -123,6 +123,15 @@ window.addEventListener('DOMContentLoaded', () => {
     return value[0].toUpperCase() + value.slice(1).toLowerCase();
   }
 
+  function filterList(arr, key, value) {
+    return arr.filter(item => {
+      if (typeof(item[key]) === 'string') {
+        return item[key].toLowerCase().includes(value.trim().toLowerCase());
+      }
+      return String(item[key]).includes(value.trim());
+    });
+  }
+
   const sectionMain = createElement('section', '', 'main'),
         container = createElement('div', '', 'container', 'p-4'),
         title = createElement('h1', 'Список студентов', 'title'),
@@ -218,8 +227,8 @@ window.addEventListener('DOMContentLoaded', () => {
             faculty: 'Юридический'
           }
         ],
-        sortDirectionFlags = {
-          name: true,
+        sortDirection = {
+          fullName: true,
           faculty: true,
           born: true,
           startDate: true
@@ -244,10 +253,10 @@ window.addEventListener('DOMContentLoaded', () => {
   inputBorn.type = 'date';
   inputStartDate.type ='number';
   tHead.style.cursor = 'pointer';
-  thName.dataset.id = 'name';
-  thFaculty.dataset.id = 'faculty';
-  thBorn.dataset.id = 'born';
-  thYearsStudy.dataset.id = 'startDate';
+  thName.dataset.columnName = 'fullName';
+  thFaculty.dataset.columnName = 'faculty';
+  thBorn.dataset.columnName = 'born';
+  thYearsStudy.dataset.columnName = 'startDate';
   filerInputStartYear.type ='number';
   filerInputFinishYear.type ='number';
   filerInputName.placeholder = 'Ф.И.О';
@@ -289,15 +298,6 @@ window.addEventListener('DOMContentLoaded', () => {
   renderElement(sectionMain, container);
   renderElement(document.body, sectionMain);
 
-  function filterList(arr, key, value) {
-    return arr.filter(item => {
-      if (typeof(item[key]) === 'string') {
-        return item[key].toLowerCase().includes(value.toLowerCase());
-      }
-      return String(item[key]).includes(value);
-    });
-  }
-
   function renderStudentsTable(arr = studentsList, parent = tBody) {
     parent.innerHTML = '';
     let copyArr = [...arr];
@@ -306,6 +306,15 @@ window.addEventListener('DOMContentLoaded', () => {
       item.fullName = `${item.surname} ${item.name} ${item.patronymic}`;
       item.finishDate = item.startDate + 4;
     });
+
+    if (sortDirection.currentColumn) {
+      copyArr = copyArr.sort((a, b) => {
+        const columnName = sortDirection.currentColumn,
+              direction = sortDirection[columnName] ?
+                a[columnName] < b[columnName] : a[columnName] > b[columnName];
+        return direction ? -1 : 1;
+      });
+    }
 
     if (filerInputName.value.trim() !== '') {
       copyArr = filterList(copyArr, 'fullName', filerInputName.value);
@@ -347,7 +356,7 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     studentsList.push(newStudent);
-    renderStudentsTable(studentsList, tBody);
+    renderStudentsTable();
     form.reset();
   });
 
@@ -363,10 +372,22 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   tHead.addEventListener('mousedown', e => e.preventDefault());
+  tHead.addEventListener('click', (e) => {
+    const currentColumn = e.target.dataset.columnName;
+    for (const key in sortDirection) {
+      if (key !== currentColumn) {
+        sortDirection[key] = true;
+      }
+    }
+    sortDirection.currentColumn = currentColumn;
+    renderStudentsTable();
+    sortDirection[currentColumn] = !sortDirection[currentColumn];
+  });
+
   filterForm.addEventListener('submit', e => e.preventDefault());
   filterForm.querySelectorAll('input').forEach(
-      item => item.addEventListener('input', () => renderStudentsTable())
+    item => item.addEventListener('input', () => renderStudentsTable())
     );
 
-  renderStudentsTable(studentsList, tBody);
+  renderStudentsTable();
 });
