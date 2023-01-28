@@ -105,8 +105,7 @@ window.addEventListener('DOMContentLoaded', () => {
             input,
             errorsContainer,
             'должно находится в диапазоне от 2000-го до текущего года');
-      }
-      else if (
+      } else if (
           input.type === 'date' &&
           checkDateRange(input, '1900-01-01', nowDate)) {
           wrong = showError(
@@ -227,12 +226,7 @@ window.addEventListener('DOMContentLoaded', () => {
             faculty: 'Юридический'
           }
         ],
-        sortDirection = {
-          fullName: true,
-          faculty: true,
-          born: true,
-          startDate: true
-        },
+        sortDirection = {},
         filterForm = createElement('form'),
         filterFormTitle = createElement('legend', 'Фильтрация'),
         filerInputName = createElement('input', '', 'form-control', 'mb-3'),
@@ -310,7 +304,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (sortDirection.currentColumn) {
       copyArr = copyArr.sort((a, b) => {
         const columnName = sortDirection.currentColumn,
-              direction = sortDirection[columnName] ?
+              direction = sortDirection.direction ?
                 a[columnName] < b[columnName] : a[columnName] > b[columnName];
         return direction ? -1 : 1;
       });
@@ -374,14 +368,12 @@ window.addEventListener('DOMContentLoaded', () => {
   tHead.addEventListener('mousedown', e => e.preventDefault());
   tHead.addEventListener('click', (e) => {
     const currentColumn = e.target.dataset.columnName;
-    for (const key in sortDirection) {
-      if (key !== currentColumn) {
-        sortDirection[key] = true;
-      }
+    if (sortDirection.currentColumn !== currentColumn) {
+      sortDirection.currentColumn = currentColumn;
+      sortDirection.direction = true;
     }
-    sortDirection.currentColumn = currentColumn;
     renderStudentsTable();
-    sortDirection[currentColumn] = !sortDirection[currentColumn];
+    sortDirection.direction = !sortDirection.direction;
   });
 
   filterForm.addEventListener('submit', e => e.preventDefault());
