@@ -46,14 +46,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function renderStudent(obj, parent) {
     const tr = createElement('tr', parent),
-          age = calculateAge(obj.born),
-          startDate = obj.startDate;
-    createElement('td', tr, `${obj.surname} ${obj.name} ${obj.patronymic}`);
+          age = calculateAge(obj.birthday),
+          studyStart = obj.studyStart;
+    createElement('td', tr, `${obj.surname} ${obj.name} ${obj.lastname}`);
     createElement('td', tr, obj.faculty);
     createElement(
       'td',
       tr,
-      `${obj.born.toLocaleDateString()} (${age} ${declOfNum(age, [
+      `${obj.birthday.toLocaleDateString()} (${age} ${declOfNum(age, [
           "год",
           "года",
           "лет",
@@ -63,7 +63,7 @@ window.addEventListener('DOMContentLoaded', () => {
     createElement(
             'td',
             tr,
-            `${startDate}-${startDate + 4} (${checkCourse(startDate)})`
+            `${studyStart}-${obj.studyEnd} (${checkCourse(studyStart)})`
           );
   }
 
@@ -147,7 +147,7 @@ window.addEventListener('DOMContentLoaded', () => {
           ['form-label', 'mb-3']
           ),
         labelName = createElement('label', form, 'Имя', ['form-label', 'mb-3']),
-        labelPatronymic = createElement(
+        labelLastName = createElement(
           'label',
           form,
           'Отчество',
@@ -159,7 +159,7 @@ window.addEventListener('DOMContentLoaded', () => {
           'Факультет',
           ['form-label', 'mb-3']
         ),
-        labelBorn = createElement(
+        labelBirthday = createElement(
           'label',
           form,
           'Дата рождения',
@@ -183,9 +183,9 @@ window.addEventListener('DOMContentLoaded', () => {
           '',
           ['form-control']
         ),
-        inputPatronymic = createElement(
+        inputLastName = createElement(
           'input',
-          labelPatronymic,
+          labelLastName,
           '',
           ['form-control']
         ),
@@ -195,8 +195,8 @@ window.addEventListener('DOMContentLoaded', () => {
           '',
           ['form-control']
         ),
-        inputBorn = createElement('input', labelBorn, '', ['form-control']),
-        inputStartDate = createElement(
+        inputBirthday = createElement('input', labelBirthday, '', ['form-control']),
+        inputStudyStart = createElement(
           'input',
           lableStartStady,
           '',
@@ -223,13 +223,13 @@ window.addEventListener('DOMContentLoaded', () => {
           '',
           ['form-control', 'mb-3']
         ),
-        filerInputStartYear = createElement(
+        filerInputStudyStart = createElement(
           'input',
           filterForm,
           '',
           ['form-control', 'mb-3']
           ),
-        filerInputFinishYear = createElement(
+        filerInputStudyEnd = createElement(
           'input',
           filterForm,
           '',
@@ -240,74 +240,74 @@ window.addEventListener('DOMContentLoaded', () => {
         tHeadTr = createElement('tr', tHead),
         thName = createElement('th', tHeadTr, 'Ф.И.О. студента'),
         thFaculty = createElement('th', tHeadTr, 'Факультет'),
-        thBorn = createElement('th', tHeadTr, 'Дата рождения и возраст'),
-        thYearsStudy = createElement('th', tHeadTr, 'Годы обучения'),
+        thBirthday = createElement('th', tHeadTr, 'Дата рождения и возраст'),
+        thStudyYears = createElement('th', tHeadTr, 'Годы обучения'),
         tBody = createElement('tbody', table, '', ['table-group-divider']),
         studentsList = [
           {
             surname: 'Соболев',
             name: 'Георгий',
-            patronymic: 'Львович',
-            born: new Date('1993-06-27'),
-            startDate: 2020,
+            lastname: 'Львович',
+            birthday: new Date('1993-06-27'),
+            studyStart: 2020,
             faculty: 'Психологии'
           },
           {
             surname: 'Лаптева',
             name: 'Нина',
-            patronymic: 'Артёмовна',
-            born: new Date('1996-08-23'),
-            startDate: 2018,
+            lastname: 'Артёмовна',
+            birthday: new Date('1996-08-23'),
+            studyStart: 2018,
             faculty: 'Юридический'
           },
           {
             surname: 'Меркулова',
             name: 'Софья',
-            patronymic: 'Тимуровна',
-            born: new Date('2003-07-15'),
-            startDate: 2022,
+            lastname: 'Тимуровна',
+            birthday: new Date('2003-07-15'),
+            studyStart: 2022,
             faculty: 'Социологии'
           },
           {
             surname: 'Поляков',
             name: 'Матвей',
-            patronymic: 'Михайлович',
-            born: new Date('2001-10-09'),
-            startDate: 2021,
+            lastname: 'Михайлович',
+            birthday: new Date('2001-10-09'),
+            studyStart: 2021,
             faculty: 'Журналистики'
           },
           {
             surname: 'Николаев',
             name: 'Кирилл',
-            patronymic: 'Иванович',
-            born: new Date('2000-02-06'),
-            startDate: 2019,
+            lastname: 'Иванович',
+            birthday: new Date('2000-02-06'),
+            studyStart: 2019,
             faculty: 'Юридический'
           }
         ],
         sortDirection = {};
 
-  inputBorn.type = 'date';
-  inputStartDate.type ='number';
+  inputBirthday.type = 'date';
+  inputStudyStart.type ='number';
   tHead.style.cursor = 'pointer';
   thName.dataset.columnName = 'fullName';
   thFaculty.dataset.columnName = 'faculty';
-  thBorn.dataset.columnName = 'born';
-  thYearsStudy.dataset.columnName = 'startDate';
-  filerInputStartYear.type ='number';
-  filerInputFinishYear.type ='number';
+  thBirthday.dataset.columnName = 'birthday';
+  thStudyYears.dataset.columnName = 'studyStart';
+  filerInputStudyStart.type ='number';
+  filerInputStudyEnd.type ='number';
   filerInputName.placeholder = 'Ф.И.О';
   filerInputFaculty.placeholder = 'Факультет';
-  filerInputStartYear.placeholder = 'Год начала обучения';
-  filerInputFinishYear.placeholder = 'Год окончания обучения';
+  filerInputStudyStart.placeholder = 'Год начала обучения';
+  filerInputStudyEnd.placeholder = 'Год окончания обучения';
 
   function renderStudentsTable(arr = studentsList, parent = tBody) {
     parent.innerHTML = '';
     let copyArr = [...arr];
 
     copyArr.forEach(item => {
-      item.fullName = `${item.surname} ${item.name} ${item.patronymic}`;
-      item.finishDate = item.startDate + 4;
+      item.fullName = `${item.surname} ${item.name} ${item.lastname}`;
+      item.studyEnd = item.studyStart + 4;
     });
 
     if (sortDirection.currentColumn) {
@@ -327,12 +327,12 @@ window.addEventListener('DOMContentLoaded', () => {
       copyArr = filterList(copyArr, 'faculty', filerInputFaculty.value);
     }
 
-    if (filerInputStartYear.value.trim() !== '') {
-      copyArr = filterList(copyArr, 'startDate', filerInputStartYear.value);
+    if (filerInputStudyStart.value.trim() !== '') {
+      copyArr = filterList(copyArr, 'studyStart', filerInputStudyStart.value);
     }
 
-    if (filerInputFinishYear.value.trim() !== '') {
-      copyArr = filterList(copyArr, 'finishDate', filerInputFinishYear.value);
+    if (filerInputStudyEnd.value.trim() !== '') {
+      copyArr = filterList(copyArr, 'studyEnd', filerInputStudyEnd.value);
     }
 
     copyArr.forEach(student => {
@@ -351,9 +351,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const newStudent = {
       surname: AddCapitalLetter(inputSurname.value),
       name: AddCapitalLetter(inputName.value),
-      patronymic: AddCapitalLetter(inputPatronymic.value),
-      born: new Date(inputBorn.value),
-      startDate: +inputStartDate.value,
+      lastname: AddCapitalLetter(inputLastName.value),
+      birthday: new Date(inputBirthday.value),
+      studyStart: +inputStudyStart.value,
       faculty: AddCapitalLetter(inputFaculty.value)
     };
 
