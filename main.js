@@ -134,7 +134,6 @@ window.addEventListener('DOMContentLoaded', () => {
       },
       body: JSON.stringify(data)
     });
-
     return await result.json();
   }
 
@@ -352,7 +351,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorsContainer.innerHTML = '';
 
@@ -365,13 +364,19 @@ window.addEventListener('DOMContentLoaded', () => {
       name: AddCapitalLetter(inputName.value),
       lastname: AddCapitalLetter(inputLastName.value),
       birthday: new Date(inputBirthday.value),
-      studyStart: +inputStudyStart.value,
+      studyStart: inputStudyStart.value,
       faculty: AddCapitalLetter(inputFaculty.value)
     };
 
-    studentsList.push(newStudent);
-    renderStudentsTable();
-    form.reset();
+    postData('http://localhost:3300/api/students', newStudent)
+      .then(data => {
+        data.birthday = new Date(data.birthday);
+        data.studyStart = +data.studyStart;
+        studentsList.push(data);
+        renderStudentsTable();
+      })
+      .catch(() => console.log('Что то не так'))
+      .finally(() => form.reset());
   });
 
   form.querySelectorAll('input').forEach(input => {
