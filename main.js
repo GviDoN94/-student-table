@@ -1,7 +1,11 @@
 'use strict';
 
 window.addEventListener('DOMContentLoaded', () => {
-  function createElement(name, text, ...classesEl) {
+  function renderElement(element, parent) {
+    parent.append(element);
+  }
+
+  function createElement(name, parent, text = '', classesEl = []) {
     const element = document.createElement(name);
     if (classesEl.length) {
       element.classList.add(...classesEl);
@@ -9,11 +13,8 @@ window.addEventListener('DOMContentLoaded', () => {
     if(text) {
       element.textContent = text;
     }
+    renderElement(element, parent);
     return element;
-  }
-
-  function renderElement(parent, element) {
-    parent.append(element);
   }
 
   function calculateAge(date) {
@@ -43,43 +44,37 @@ window.addEventListener('DOMContentLoaded', () => {
     return courseNumber > 4 ? 'закончил' : `${courseNumber} курс`;
   }
 
-  function renderStudent(obj) {
-    const tr = createElement('tr'),
-          tdName = createElement(
-            'td',
-            `${obj.surname} ${obj.name} ${obj.patronymic}`
-          ),
-          tdFaculty = createElement('td', obj.faculty),
+  function renderStudent(obj, parent) {
+    const tr = createElement('tr', parent),
           age = calculateAge(obj.born),
-          tdBorn = createElement(
+          startDate = obj.startDate;
+    createElement('td', tr, `${obj.surname} ${obj.name} ${obj.patronymic}`);
+    createElement('td', tr, obj.faculty);
+    createElement(
+      'td',
+      tr,
+      `${obj.born.toLocaleDateString()} (${age} ${declOfNum(age, [
+          "год",
+          "года",
+          "лет",
+        ])})
+      `
+    );
+    createElement(
             'td',
-            `${obj.born.toLocaleDateString()} (${age} ${declOfNum(age, [
-              "год",
-              "года",
-              "лет",
-            ])})`),
-          startDate = obj.startDate,
-          tdYearsStudy = createElement(
-            'td',
+            tr,
             `${startDate}-${startDate + 4} (${checkCourse(startDate)})`
           );
-
-    renderElement(tr, tdName);
-    renderElement(tr, tdFaculty);
-    renderElement(tr, tdBorn);
-    renderElement(tr, tdYearsStudy);
-
-    return tr;
   }
 
   function showError(element, errorsContainer, message) {
     element.classList.add('is-invalid');
-    const error = createElement(
+    createElement(
       'p',
+      errorsContainer,
       `Поле "${element.parentNode.textContent}" ${message}`,
-      'text-danger'
+      ['text-danger']
     );
-    renderElement(errorsContainer, error);
     return true;
   }
 
@@ -131,59 +126,123 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const sectionMain = createElement('section', '', 'main'),
-        container = createElement('div', '', 'container', 'p-4'),
-        title = createElement('h1', 'Список студентов', 'title'),
-        form = createElement('form', '', 'd-flex', 'flex-column', 'mb-5'),
-        formTitle = createElement('legend', 'Форма добавления нового студента'),
-        table = createElement('table', '', 'table', 'table-hover'),
-        tHead = createElement('thead'),
-        tHeadTr = createElement('tr'),
-        thName = createElement('th', 'Ф.И.О. студента'),
-        thFaculty = createElement('th', 'Факультет'),
-        thBorn = createElement('th', 'Дата рождения и возраст'),
-        thYearsStudy = createElement('th', 'Годы обучения'),
-        tBody = createElement('tbody', '', 'table-group-divider'),
-        labelName = createElement('label', 'Имя', 'form-label', 'mb-3'),
-        labelSurname = createElement('label', 'Фамилия', 'form-label', 'mb-3'),
+  const sectionMain = createElement('section', document.body, '', ['main']),
+        container = createElement('div', sectionMain, '', ['container', 'p-4']),
+        title = createElement('h1', container, 'Список студентов', ['title']),
+        form = createElement(
+          'form',
+          container,
+          '',
+          ['d-flex', 'flex-column', 'mb-5']
+        ),
+        formTitle = createElement(
+          'legend',
+          form,
+          'Форма добавления нового студента'
+        ),
+        labelSurname = createElement(
+          'label',
+          form,
+          'Фамилия',
+          ['form-label', 'mb-3']
+          ),
+        labelName = createElement('label', form, 'Имя', ['form-label', 'mb-3']),
         labelPatronymic = createElement(
           'label',
+          form,
           'Отчество',
-          'form-label',
-          'mb-3'
+          ['form-label', 'mb-3']
         ),
         labelFaculty = createElement(
           'label',
+          form,
           'Факультет',
-          'form-label',
-          'mb-3'
+          ['form-label', 'mb-3']
         ),
         labelBorn = createElement(
           'label',
+          form,
           'Дата рождения',
-          'form-label',
-          'mb-3'
+          ['form-label', 'mb-3']
         ),
-        lableStartsOfStadies = createElement(
+        lableStartStady = createElement(
           'label',
+          form,
           'Год начала обучения',
-          'form-label',
-          'mb-4'
+          ['form-label', 'mb-4']
         ),
-        inputName = createElement('input', '', 'form-control'),
-        inputSurname = createElement('input', '', 'form-control'),
-        inputPatronymic = createElement('input', '', 'form-control'),
-        inputFaculty = createElement('input', '', 'form-control'),
-        inputBorn = createElement('input', '', 'form-control'),
-        inputStartDate = createElement('input', '', 'form-control'),
-        errorsContainer = createElement('div'),
+        inputSurname = createElement(
+          'input',
+          labelSurname,
+          '',
+          ['form-control']
+        ),
+        inputName = createElement(
+          'input',
+          labelName,
+          '',
+          ['form-control']
+        ),
+        inputPatronymic = createElement(
+          'input',
+          labelPatronymic,
+          '',
+          ['form-control']
+        ),
+        inputFaculty = createElement(
+          'input',
+          labelFaculty,
+          '',
+          ['form-control']
+        ),
+        inputBorn = createElement('input', labelBorn, '', ['form-control']),
+        inputStartDate = createElement(
+          'input',
+          lableStartStady,
+          '',
+          ['form-control']
+        ),
+        errorsContainer = createElement('div', form),
         submitBtn = createElement(
           'button',
+          form,
           'Добавить студента',
-          'btn',
-          'btn-primary',
-          'align-self-start'
+          ['btn', 'btn-primary', 'align-self-start']
         ),
+        filterForm = createElement('form', container),
+        filterFormTitle = createElement('legend', filterForm, 'Фильтрация'),
+        filerInputName = createElement(
+          'input',
+          filterForm,
+          '',
+          ['form-control', 'mb-3']
+        ),
+        filerInputFaculty = createElement(
+          'input',
+          filterForm,
+          '',
+          ['form-control', 'mb-3']
+        ),
+        filerInputStartYear = createElement(
+          'input',
+          filterForm,
+          '',
+          ['form-control', 'mb-3']
+          ),
+        filerInputFinishYear = createElement(
+          'input',
+          filterForm,
+          '',
+          ['form-control', 'mb-3']
+          ),
+        table = createElement('table', container, '', ['table', 'table-hover']),
+        tHead = createElement('thead', table),
+        tHeadTr = createElement('tr', tHead),
+        thName = createElement('th', tHeadTr, 'Ф.И.О. студента'),
+        thFaculty = createElement('th', tHeadTr, 'Факультет'),
+        thBorn = createElement('th', tHeadTr, 'Дата рождения и возраст'),
+        thYearsStudy = createElement('th', tHeadTr, 'Годы обучения'),
+        tBody = createElement('tbody', table, '', ['table-group-divider']),
         studentsList = [
           {
             surname: 'Соболев',
@@ -226,23 +285,7 @@ window.addEventListener('DOMContentLoaded', () => {
             faculty: 'Юридический'
           }
         ],
-        sortDirection = {},
-        filterForm = createElement('form'),
-        filterFormTitle = createElement('legend', 'Фильтрация'),
-        filerInputName = createElement('input', '', 'form-control', 'mb-3'),
-        filerInputFaculty = createElement('input', '', 'form-control', 'mb-3'),
-        filerInputStartYear = createElement(
-          'input',
-          '',
-          'form-control',
-          'mb-3'
-          ),
-        filerInputFinishYear = createElement(
-          'input',
-          '',
-          'form-control',
-          'mb-3'
-          );
+        sortDirection = {};
 
   inputBorn.type = 'date';
   inputStartDate.type ='number';
@@ -257,40 +300,6 @@ window.addEventListener('DOMContentLoaded', () => {
   filerInputFaculty.placeholder = 'Факультет';
   filerInputStartYear.placeholder = 'Год начала обучения';
   filerInputFinishYear.placeholder = 'Год окончания обучения';
-
-  renderElement(container, title);
-  renderElement(form, formTitle);
-  renderElement(labelSurname, inputSurname);
-  renderElement(labelName, inputName);
-  renderElement(labelPatronymic, inputPatronymic);
-  renderElement(labelFaculty, inputFaculty);
-  renderElement(labelBorn, inputBorn);
-  renderElement(lableStartsOfStadies, inputStartDate);
-  renderElement(form, labelSurname);
-  renderElement(form, labelName);
-  renderElement(form, labelPatronymic);
-  renderElement(form, labelFaculty);
-  renderElement(form, labelBorn);
-  renderElement(form, lableStartsOfStadies);
-  renderElement(form, errorsContainer);
-  renderElement(form, submitBtn);
-  renderElement(container, form);
-  renderElement(filterForm, filterFormTitle);
-  renderElement(filterForm, filerInputName);
-  renderElement(filterForm, filerInputFaculty);
-  renderElement(filterForm, filerInputStartYear);
-  renderElement(filterForm, filerInputFinishYear);
-  renderElement(container, filterForm);
-  renderElement(tHeadTr, thName);
-  renderElement(tHeadTr, thFaculty);
-  renderElement(tHeadTr, thBorn);
-  renderElement(tHeadTr, thYearsStudy);
-  renderElement(tHead, tHeadTr);
-  renderElement(table, tHead);
-  renderElement(table, tBody);
-  renderElement(container, table);
-  renderElement(sectionMain, container);
-  renderElement(document.body, sectionMain);
 
   function renderStudentsTable(arr = studentsList, parent = tBody) {
     parent.innerHTML = '';
@@ -327,8 +336,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     copyArr.forEach(student => {
-      const element = renderStudent(student);
-      renderElement(parent, element);
+      renderStudent(student, parent);
     });
   }
 
