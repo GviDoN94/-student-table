@@ -126,6 +126,18 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  async function postData(url, data) {
+    const result = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    return await result.json();
+  }
+
   const sectionMain = createElement('section', document.body, '', ['main']),
         container = createElement('div', sectionMain, '', ['container', 'p-4']),
         title = createElement('h1', container, 'Список студентов', ['title']),
