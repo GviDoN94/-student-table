@@ -67,7 +67,7 @@ window.addEventListener('DOMContentLoaded', () => {
           );
   }
 
-  function showError(element, errorsContainer, message) {
+  function showFormError(element, errorsContainer, message) {
     element.classList.add('is-invalid');
     createElement(
       'p',
@@ -88,7 +88,7 @@ window.addEventListener('DOMContentLoaded', () => {
     let wrong = false;
     form.querySelectorAll('input').forEach(input => {
       if (!input.value.trim()) {
-        wrong = showError(
+        wrong = showFormError(
           input,
           errorsContainer,
           'не заполнено или содержит пробелы'
@@ -96,14 +96,14 @@ window.addEventListener('DOMContentLoaded', () => {
       } else if (
           input.type === 'number' &&
           (input.value < 2000 || input.value > nowDate.getFullYear())) {
-          wrong = showError(
+          wrong = showFormError(
             input,
             errorsContainer,
             'должно находится в диапазоне от 2000-го до текущего года');
       } else if (
           input.type === 'date' &&
           checkDateRange(input, '1900-01-01', nowDate)) {
-          wrong = showError(
+          wrong = showFormError(
             input,
             errorsContainer,
             'должно находится в диапазоне от 01.01.1900-го до текущей даты'
@@ -126,9 +126,14 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function changeDataType(obj) {
+  function changeDataTypes(obj) {
     obj.birthday = new Date(obj.birthday);
     obj.studyStart = +obj.studyStart;
+  }
+
+  function addFullNameAndStudyEnd(obj) {
+    obj.fullName = `${obj.surname} ${obj.name} ${obj.lastname}`;
+    obj.studyEnd = obj.studyStart + 4;
   }
 
   async function getData(url) {
@@ -288,12 +293,6 @@ window.addEventListener('DOMContentLoaded', () => {
     let copyArr = [...arr];
     parent.innerHTML = '';
 
-    copyArr.forEach(item => {
-      changeDataType(item);
-      item.fullName = `${item.surname} ${item.name} ${item.lastname}`;
-      item.studyEnd = item.studyStart + 4;
-    });
-
     if (sortDirection.currentColumn) {
       copyArr = copyArr.sort((a, b) => {
         const columnName = sortDirection.currentColumn,
@@ -327,6 +326,10 @@ window.addEventListener('DOMContentLoaded', () => {
   getData('http://localhost:3300/api/students')
   .then(data => {
     studentsList = [...data];
+    studentsList.forEach(item => {
+      changeDataTypes(item);
+      addFullNameAndStudyEnd(item);
+    });
     renderStudentsTable();
   });
 
@@ -349,11 +352,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
     postData('http://localhost:3300/api/students', newStudent)
       .then(data => {
-        changeDataType(data);
+        changeDataTypes(data);
+        addFullNameAndStudyEnd(data);
         studentsList.push(data);
         renderStudent(data, tBody);
       })
-      .catch(() => console.log('Что то не так'))
       .finally(() => form.reset());
   });
 
