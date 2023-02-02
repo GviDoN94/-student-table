@@ -65,6 +65,19 @@ window.addEventListener('DOMContentLoaded', () => {
       tr,
       `${studyStart}-${obj.studyEnd} (${checkCourse(studyStart)})`
     );
+
+    const deleteTd = createElement('td', tr, '', ['text-end']),
+          deleteBtn = createElement(
+            'button',
+            deleteTd,
+            'x',
+            ['btn', 'btn-danger']
+          );
+    deleteBtn.style.cursor = 'pointer';
+
+    deleteBtn.addEventListener('click', () => {
+      deleteStudent(obj, tr);
+    });
   }
 
   function showFormError(element, errorsContainer, message) {
@@ -147,6 +160,16 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => statusElement.remove(), 3000);
   }
 
+  function showTableError(message) {
+    tableErrorsContainer.textContent = '';
+    createElement(
+      'p',
+      tableErrorsContainer,
+      message,
+      ['text-danger', 'text-center']
+    );
+  }
+
   async function getData(url) {
     const result = await fetch(url);
     if (!result.ok) {
@@ -164,6 +187,25 @@ window.addEventListener('DOMContentLoaded', () => {
       body: JSON.stringify(data)
     });
     return await result.json();
+  }
+
+  async function deleteData(url, id) {
+    const result = await fetch(`${url}${id}`, {
+      method: 'DELETE'
+    });
+    if (!result.ok) {
+      throw new Error(`Could not fetch ${url}, status ${result.status}`);
+    }
+    return result;
+  }
+
+  function deleteStudent(obj, element) {
+    deleteData('http://localhost:3300/api/students/', obj.id)
+      .then(() => {
+        tableErrorsContainer.textContent = '';
+        element.remove();
+      })
+      .catch(() => showTableError('Ну удалость удалить данные...'));
   }
 
   const sectionMain = createElement('section', document.body, '', ['main']),
@@ -293,6 +335,7 @@ window.addEventListener('DOMContentLoaded', () => {
             class: 'text-success'
           }
         },
+        tableErrorsContainer = createElement('div', container),
         sortDirection = {};
         let studentsList = [];
 
@@ -346,6 +389,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   getData('http://localhost:3300/api/students')
     .then(data => {
+      tableErrorsContainer.textContent = '';
       studentsList = [...data];
       studentsList.forEach(item => {
         changeDataTypes(item);
@@ -354,12 +398,7 @@ window.addEventListener('DOMContentLoaded', () => {
       renderStudentsTable();
     })
     .catch(() => {
-      createElement(
-        'p',
-        container,
-        'Не удалость получить данные...',
-        ['text-danger', 'text-center']
-      );
+      showTableError('Не удалость загрузить данные...');
     });
 
   form.addEventListener('submit', async (e) => {
