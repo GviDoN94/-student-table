@@ -126,6 +126,19 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function changeDataType(obj) {
+    obj.birthday = new Date(obj.birthday);
+    obj.studyStart = +obj.studyStart;
+  }
+
+  async function getData(url) {
+    const result = await fetch(url);
+    if (!result.ok) {
+      throw new Error(`Could not fetch ${url}, status ${result.status}`);
+    }
+    return await result.json();
+  }
+
   async function postData(url, data) {
     const result = await fetch(url, {
       method: 'POST',
@@ -222,25 +235,25 @@ window.addEventListener('DOMContentLoaded', () => {
         ),
         filterForm = createElement('form', container),
         filterFormTitle = createElement('legend', filterForm, 'Фильтрация'),
-        filerInputName = createElement(
+        filterInputName = createElement(
           'input',
           filterForm,
           '',
           ['form-control', 'mb-3']
         ),
-        filerInputFaculty = createElement(
+        filterInputFaculty = createElement(
           'input',
           filterForm,
           '',
           ['form-control', 'mb-3']
         ),
-        filerInputStudyStart = createElement(
+        filterInputStudyStart = createElement(
           'input',
           filterForm,
           '',
           ['form-control', 'mb-3']
           ),
-        filerInputStudyEnd = createElement(
+        filterInputStudyEnd = createElement(
           'input',
           filterForm,
           '',
@@ -254,49 +267,8 @@ window.addEventListener('DOMContentLoaded', () => {
         thBirthday = createElement('th', tHeadTr, 'Дата рождения и возраст'),
         thStudyYears = createElement('th', tHeadTr, 'Годы обучения'),
         tBody = createElement('tbody', table, '', ['table-group-divider']),
-        studentsList = [
-          {
-            surname: 'Соболев',
-            name: 'Георгий',
-            lastname: 'Львович',
-            birthday: new Date('1993-06-27'),
-            studyStart: 2020,
-            faculty: 'Психологии'
-          },
-          {
-            surname: 'Лаптева',
-            name: 'Нина',
-            lastname: 'Артёмовна',
-            birthday: new Date('1996-08-23'),
-            studyStart: 2018,
-            faculty: 'Юридический'
-          },
-          {
-            surname: 'Меркулова',
-            name: 'Софья',
-            lastname: 'Тимуровна',
-            birthday: new Date('2003-07-15'),
-            studyStart: 2022,
-            faculty: 'Социологии'
-          },
-          {
-            surname: 'Поляков',
-            name: 'Матвей',
-            lastname: 'Михайлович',
-            birthday: new Date('2001-10-09'),
-            studyStart: 2021,
-            faculty: 'Журналистики'
-          },
-          {
-            surname: 'Николаев',
-            name: 'Кирилл',
-            lastname: 'Иванович',
-            birthday: new Date('2000-02-06'),
-            studyStart: 2019,
-            faculty: 'Юридический'
-          }
-        ],
         sortDirection = {};
+        let studentsList = [];
 
   inputBirthday.type = 'date';
   inputStudyStart.type ='number';
@@ -305,18 +277,19 @@ window.addEventListener('DOMContentLoaded', () => {
   thFaculty.dataset.columnName = 'faculty';
   thBirthday.dataset.columnName = 'birthday';
   thStudyYears.dataset.columnName = 'studyStart';
-  filerInputStudyStart.type ='number';
-  filerInputStudyEnd.type ='number';
-  filerInputName.placeholder = 'Ф.И.О';
-  filerInputFaculty.placeholder = 'Факультет';
-  filerInputStudyStart.placeholder = 'Год начала обучения';
-  filerInputStudyEnd.placeholder = 'Год окончания обучения';
+  filterInputStudyStart.type ='number';
+  filterInputStudyEnd.type ='number';
+  filterInputName.placeholder = 'Ф.И.О';
+  filterInputFaculty.placeholder = 'Факультет';
+  filterInputStudyStart.placeholder = 'Год начала обучения';
+  filterInputStudyEnd.placeholder = 'Год окончания обучения';
 
   function renderStudentsTable(arr = studentsList, parent = tBody) {
-    parent.innerHTML = '';
     let copyArr = [...arr];
+    parent.innerHTML = '';
 
     copyArr.forEach(item => {
+      changeDataType(item);
       item.fullName = `${item.surname} ${item.name} ${item.lastname}`;
       item.studyEnd = item.studyStart + 4;
     });
@@ -330,26 +303,32 @@ window.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    if (filerInputName.value.trim() !== '') {
-      copyArr = filterList(copyArr, 'fullName', filerInputName.value);
+    if (filterInputName.value.trim() !== '') {
+      copyArr = filterList(copyArr, 'fullName', filterInputName.value);
     }
 
-    if (filerInputFaculty.value.trim() !== '') {
-      copyArr = filterList(copyArr, 'faculty', filerInputFaculty.value);
+    if (filterInputFaculty.value.trim() !== '') {
+      copyArr = filterList(copyArr, 'faculty', filterInputFaculty.value);
     }
 
-    if (filerInputStudyStart.value.trim() !== '') {
-      copyArr = filterList(copyArr, 'studyStart', filerInputStudyStart.value);
+    if (filterInputStudyStart.value.trim() !== '') {
+      copyArr = filterList(copyArr, 'studyStart', filterInputStudyStart.value);
     }
 
-    if (filerInputStudyEnd.value.trim() !== '') {
-      copyArr = filterList(copyArr, 'studyEnd', filerInputStudyEnd.value);
+    if (filterInputStudyEnd.value.trim() !== '') {
+      copyArr = filterList(copyArr, 'studyEnd', filterInputStudyEnd.value);
     }
 
     copyArr.forEach(student => {
       renderStudent(student, parent);
     });
   }
+
+  getData('http://localhost:3300/api/students')
+  .then(data => {
+    studentsList = [...data];
+    renderStudentsTable();
+  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -370,10 +349,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     postData('http://localhost:3300/api/students', newStudent)
       .then(data => {
-        data.birthday = new Date(data.birthday);
-        data.studyStart = +data.studyStart;
+        changeDataType(data);
         studentsList.push(data);
-        renderStudentsTable();
+        renderStudent(data, tBody);
       })
       .catch(() => console.log('Что то не так'))
       .finally(() => form.reset());
@@ -404,7 +382,5 @@ window.addEventListener('DOMContentLoaded', () => {
   filterForm.addEventListener('submit', e => e.preventDefault());
   filterForm.querySelectorAll('input').forEach(
     item => item.addEventListener('input', () => renderStudentsTable())
-    );
-
-  renderStudentsTable();
+  );
 });
