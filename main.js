@@ -136,6 +136,17 @@ window.addEventListener('DOMContentLoaded', () => {
     obj.studyEnd = obj.studyStart + 4;
   }
 
+  function showFormSubmissionStatus(status = true) {
+    const key = status ? 'success' : 'error';
+    const statusElement = createElement(
+      'p',
+      errorsContainer,
+      statusesOfSend[key].message,
+      [statusesOfSend[key].class]
+    );
+    setTimeout(() => statusElement.remove(), 3000);
+  }
+
   async function getData(url) {
     const result = await fetch(url);
     if (!result.ok) {
@@ -272,6 +283,16 @@ window.addEventListener('DOMContentLoaded', () => {
         thBirthday = createElement('th', tHeadTr, 'Дата рождения и возраст'),
         thStudyYears = createElement('th', tHeadTr, 'Годы обучения'),
         tBody = createElement('tbody', table, '', ['table-group-divider']),
+        statusesOfSend = {
+          error: {
+            message: 'Что-то пошло не так...',
+            class: 'text-danger'
+          },
+          success: {
+            message: 'Студент успешно добавлен!',
+            class: 'text-success'
+          }
+        },
         sortDirection = {};
         let studentsList = [];
 
@@ -345,7 +366,7 @@ window.addEventListener('DOMContentLoaded', () => {
       surname: AddCapitalLetter(inputSurname.value),
       name: AddCapitalLetter(inputName.value),
       lastname: AddCapitalLetter(inputLastName.value),
-      birthday: new Date(inputBirthday.value),
+      birthday: inputBirthday.value,
       studyStart: inputStudyStart.value,
       faculty: AddCapitalLetter(inputFaculty.value)
     };
@@ -355,8 +376,10 @@ window.addEventListener('DOMContentLoaded', () => {
         changeDataTypes(data);
         addFullNameAndStudyEnd(data);
         studentsList.push(data);
-        renderStudent(data, tBody);
+        showFormSubmissionStatus();
+        renderStudentsTable();
       })
+      .catch(() => showFormSubmissionStatus(false))
       .finally(() => form.reset());
   });
 
