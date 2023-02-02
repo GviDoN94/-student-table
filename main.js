@@ -277,7 +277,12 @@ window.addEventListener('DOMContentLoaded', () => {
           '',
           ['form-control']
         ),
-        inputBirthday = createElement('input', labelBirthday, '', ['form-control']),
+        inputBirthday = createElement(
+          'input',
+          labelBirthday,
+          '',
+          ['form-control']
+        ),
         inputStudyStart = createElement(
           'input',
           lableStartStady,
@@ -339,6 +344,12 @@ window.addEventListener('DOMContentLoaded', () => {
         sortDirection = {};
         let studentsList = [];
 
+  inputSurname.name = 'surname';
+  inputName.name = 'name';
+  inputLastName.name = 'lastname';
+  inputBirthday.name = 'birthday';
+  inputStudyStart.name = 'studyStart';
+  inputFaculty.name = 'faculty';
   inputBirthday.type = 'date';
   inputStudyStart.type ='number';
   tHead.style.cursor = 'pointer';
@@ -409,14 +420,8 @@ window.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const newStudent = {
-      surname: AddCapitalLetter(inputSurname.value),
-      name: AddCapitalLetter(inputName.value),
-      lastname: AddCapitalLetter(inputLastName.value),
-      birthday: inputBirthday.value,
-      studyStart: inputStudyStart.value,
-      faculty: AddCapitalLetter(inputFaculty.value)
-    };
+    const formData = new FormData(form),
+          newStudent = Object.fromEntries(formData.entries());
 
     postData('http://localhost:3300/api/students', newStudent)
       .then(data => {
