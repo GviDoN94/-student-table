@@ -61,10 +61,10 @@ window.addEventListener('DOMContentLoaded', () => {
       `
     );
     createElement(
-            'td',
-            tr,
-            `${studyStart}-${obj.studyEnd} (${checkCourse(studyStart)})`
-          );
+      'td',
+      tr,
+      `${studyStart}-${obj.studyEnd} (${checkCourse(studyStart)})`
+    );
   }
 
   function showFormError(element, errorsContainer, message) {
@@ -141,8 +141,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const statusElement = createElement(
       'p',
       errorsContainer,
-      statusesOfSend[key].message,
-      [statusesOfSend[key].class]
+      statuses[key].message,
+      [statuses[key].class]
     );
     setTimeout(() => statusElement.remove(), 3000);
   }
@@ -283,7 +283,7 @@ window.addEventListener('DOMContentLoaded', () => {
         thBirthday = createElement('th', tHeadTr, 'Дата рождения и возраст'),
         thStudyYears = createElement('th', tHeadTr, 'Годы обучения'),
         tBody = createElement('tbody', table, '', ['table-group-divider']),
-        statusesOfSend = {
+        statuses = {
           error: {
             message: 'Что-то пошло не так...',
             class: 'text-danger'
@@ -345,14 +345,22 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   getData('http://localhost:3300/api/students')
-  .then(data => {
-    studentsList = [...data];
-    studentsList.forEach(item => {
-      changeDataTypes(item);
-      addFullNameAndStudyEnd(item);
+    .then(data => {
+      studentsList = [...data];
+      studentsList.forEach(item => {
+        changeDataTypes(item);
+        addFullNameAndStudyEnd(item);
+      });
+      renderStudentsTable();
+    })
+    .catch(() => {
+      createElement(
+        'p',
+        container,
+        'Не удалость получить данные...',
+        ['text-danger', 'text-center']
+      );
     });
-    renderStudentsTable();
-  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
