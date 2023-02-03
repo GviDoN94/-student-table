@@ -200,12 +200,14 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function deleteStudent(obj, element) {
-    deleteData('http://localhost:3300/api/students/', obj.id)
-      .then(() => {
-        tableErrorsContainer.textContent = '';
-        element.remove();
-      })
-      .catch(() => showTableError('Ну удалость удалить данные...'));
+    if (confirm('Вы уверены?')) {
+      deleteData('http://localhost:3300/api/students/', obj.id)
+        .then(() => {
+          tableErrorsContainer.textContent = '';
+          element.remove();
+        })
+        .catch(() => showTableError('Ну удалость удалить данные...'));
+    }
   }
 
   const sectionMain = createElement('section', document.body, '', ['main']),
